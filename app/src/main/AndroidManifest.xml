@@ -26,6 +26,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".fragment.DetailFragment">
+
+        </activity>
+
         <service
             android:name="anuja.project.finalproject.sync.AuthenticatorService"
             android:exported="false">
@@ -50,7 +54,7 @@
         </service>
 
         <provider
-            android:name="anuja.project.finalproject.sync.StubProvider"
+            android:name="anuja.project.finalproject.data.ProductContentProvider"
             android:authorities="com.anuja.finalproject"
             android:exported="false"
             android:syncable="true" />
