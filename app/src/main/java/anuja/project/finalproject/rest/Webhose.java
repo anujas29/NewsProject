@@ -11,10 +11,11 @@ public class Webhose {
 
     //http://webhose.io/productFilter?token=dd64f85a-114f-443d-87ef-a358a27ab135&format=json&q=(name:dresses)&on_sale=true
 
+    //http://webhose.io/filterWebContent?token=dec130bd-1e05-4205-878c-40521605253c&format=json&sort=crawled&q=%22donald%20trump%22%20language%3Aenglish
     // URL constans
     public static final String BASE_URL="http://webhose.io/productFilter";
     public static final String TOKEN = "token";
-    public static final String API_KEY = "09efcf63-1c83-47f4-b1ff-62a433a5a999";
+    public static final String API_KEY = "dec130bd-1e05-4205-878c-40521605253c";
     public static final String FORMAT = "format";
     public static final String FORMAT_VALUE = "json";
     public static final String QUERY = "q";
@@ -23,6 +24,7 @@ public class Webhose {
     public static final String ON_SALE_VALUE = "true";
     public static final String SIZE = "size";
     public static final String SIZE_VALUE = "2";
+    public static final String COUNTRY = "country";
 
     // for Response
     public static final String PRODUCTS = "products";

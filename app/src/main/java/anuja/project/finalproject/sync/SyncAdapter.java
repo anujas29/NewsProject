@@ -25,16 +25,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
 
+import anuja.project.finalproject.FindLocation;
 import anuja.project.finalproject.R;
 import anuja.project.finalproject.data.ProductContract;
 import anuja.project.finalproject.rest.ProductModel;
 import anuja.project.finalproject.rest.Webhose;
 
+import static android.R.attr.type;
+
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String TAG = "SyncAdapter";
     Context mContext;
     public static final String ACTION_DATA_UPDATED = "anuja.project.finalproject.ACTION_DATA_UPDATED";
-    public static final int SYNC_INTERVAL = 120;//24 hours
+    public static final int SYNC_INTERVAL = 10*60*60;//24 hours
     private static final String ACCOUNT_TYPE = "com.anuja.finalproject";
     private static final String ACCOUNT_NAME = "Default Account";
 
@@ -125,56 +128,99 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         System.out.println("-------------------- onPerformSync ----------------------------");
         Log.d(TAG, "<<<<onPerformSync");
-        HttpURLConnection urlConnection = null;
-        BufferedReader bufferedReader = null;
-        String line;
-        String jsonStr = null;
-        StringBuilder lines = new StringBuilder();
-        String type = "";
-        //fetchJson();
 
-        try {
-            Uri builtUri = Uri.parse(Webhose.BASE_URL).buildUpon()
-                    .appendQueryParameter(Webhose.TOKEN, Webhose.API_KEY)
-                    .appendQueryParameter(Webhose.FORMAT, Webhose.FORMAT_VALUE)
-                    .appendQueryParameter(Webhose.QUERY, Webhose.QUERY_VALUE)
-                    .appendQueryParameter(Webhose.ON_SALE, Webhose.ON_SALE_VALUE)
-                    .appendQueryParameter(Webhose.SIZE, Webhose.SIZE_VALUE)
-                    .build();
+        int deleted = deleteOldDataFromDatabase();
+        System.out.println("-------------------- Delete Old Data ----------------------------"+deleted);
+        Log.e(TAG, "Delete Old Data " + deleted + " deleted");
 
-            Log.e(TAG, "Built URI " + builtUri.toString());
-            URL url = new URL(builtUri.toString());
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
+        int i;
+        for( i=0 ; i<2 ; i++) {
 
-            InputStream inputStream = urlConnection.getInputStream();
-            if (inputStream == null) {
-                return;
+            HttpURLConnection urlConnection = null;
+            BufferedReader bufferedReader = null;
+            String line;
+            String jsonStr = null;
+            StringBuilder lines = new StringBuilder();
+
+            //fetchJson();
+            String location="";
+            if(i==0){
+//                location = "global";
+//                location = WebhoseAPI.QUERY_VALUE_GLOBAL;
+                Log.e(TAG, "Global Location = "+location);
+            }else{
+                location = FindLocation.Location(mContext);
+                //location = "local";
+                Log.e(TAG, "Local Location = "+location);
             }
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((line = bufferedReader.readLine()) != null) {
-                lines.append(line);
-            }
-            if (lines.length() == 0) {
-                return;
-            }
-            jsonStr = lines.toString();
-            Log.e(TAG, type + " ---- " + jsonStr);
-            System.out.println("-------------------------------------------jsonStr::::" + jsonStr);
-            //***************************_DATABASE_*******
-            fetchJsonAndSave(jsonStr);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (urlConnection != null)
-                urlConnection.disconnect();
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            try {
+
+                if(i==0) {
+                    Uri builtUri = Uri.parse(Webhose.BASE_URL).buildUpon()
+                            .appendQueryParameter(Webhose.TOKEN, Webhose.API_KEY)
+                            .appendQueryParameter(Webhose.FORMAT, Webhose.FORMAT_VALUE)
+                            .appendQueryParameter(Webhose.QUERY, Webhose.QUERY_VALUE)
+                            .appendQueryParameter(Webhose.ON_SALE, Webhose.ON_SALE_VALUE)
+                            .appendQueryParameter(Webhose.SIZE, Webhose.SIZE_VALUE)
+                            .build();
+
+                    Log.e(TAG, "inside if Built URI " + builtUri.toString());
+                    URL url = new URL(builtUri.toString());
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+                }
+                else
+                {
+                    System.out.println("--------------------- inside sync adapter else sync------------------------------------------"+location);
+                    Uri builtUri = Uri.parse(Webhose.BASE_URL).buildUpon()
+                            .appendQueryParameter(Webhose.TOKEN, Webhose.API_KEY)
+                            .appendQueryParameter(Webhose.FORMAT, Webhose.FORMAT_VALUE)
+                            .appendQueryParameter(Webhose.QUERY, Webhose.QUERY_VALUE)
+                            .appendQueryParameter(Webhose.ON_SALE, Webhose.ON_SALE_VALUE)
+                            .appendQueryParameter(Webhose.SIZE, Webhose.SIZE_VALUE)
+                            .appendQueryParameter(Webhose.COUNTRY,location.toUpperCase())
+                            .build();
+
+                    Log.e(TAG, "inside else Built URI :::: " + builtUri.toString());
+                    URL url = new URL(builtUri.toString());
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+
+                }
+
+
+
+                InputStream inputStream = urlConnection.getInputStream();
+                if (inputStream == null) {
+                    return;
+                }
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                while ((line = bufferedReader.readLine()) != null) {
+                    lines.append(line);
+                }
+                if (lines.length() == 0) {
+                    return;
+                }
+                jsonStr = lines.toString();
+                Log.e(TAG, type + " ---- " + jsonStr);
+                System.out.println("-------------------------------------------jsonStr::::" + jsonStr);
+                //***************************_DATABASE_*******
+                fetchJsonAndSave(jsonStr,i);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (urlConnection != null)
+                    urlConnection.disconnect();
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -184,7 +230,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
-    private void fetchJsonAndSave(String jsonStr) {
+    private int deleteOldDataFromDatabase(){
+        //Delete old date except favourite ones
+        return mContext.getContentResolver().delete(
+                ProductContract.ProductEntry.CONTENT_URI
+                , ProductContract.ProductEntry.COLUMN_FAV+" = ?"
+                ,new String[]{String.valueOf(0)});
+    }
+
+    private void fetchJsonAndSave(String jsonStr, int i) {
 
         if (jsonStr != null) {
             try {
@@ -194,8 +248,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 JSONArray jArray = jObjectAll.getJSONArray(Webhose.PRODUCTS);
                 Vector<ContentValues> contentvalue_vector = new Vector<ContentValues>(jArray.length());
 
-                for (int i = 0; i < jArray.length(); i++) {
-                    JSONObject jObject = jArray.getJSONObject(i);
+                for (int j = 0; j < jArray.length(); j++) {
+                    JSONObject jObject = jArray.getJSONObject(j);
                     JSONObject threadObject = jObject.getJSONObject(Webhose.SOURCE);
                     JSONArray jsonArray = jObject.getJSONArray(Webhose.IMAGE);
                     ProductModel productModel = new ProductModel(
@@ -225,9 +279,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //                    Values.put(ProductContract.ProductEntry.COLUMN_IMAGE,productModel.mImage);
                     Values.put(ProductContract.ProductEntry.COLUMN_IMAGE,jsonArray.getString(0));
 
+                    System.out.println("------------------------------- before global ----------------------" );
+                    if(i==0){
+
+                        Values.put(ProductContract.ProductEntry.COLUMN_GLOBAL_SALE,1);
+                        System.out.println("------------------------------- global ----------------------" );
+                    }else if(i == 1){
+
+                        System.out.println("------------------------------- local ----------------------" );
+                        Values.put(ProductContract.ProductEntry.COLUMN_LOCAL_SALE,1);
+                    }
+
                     contentvalue_vector.add(Values);
 
-                    System.out.println("------------------------------- i ----------------------" + i);
+                    System.out.println("------------------------------- i ----------------------" + j);
                     System.out.println("------------------------------- UUID ----------------------" + jObject.getString(Webhose.UUID));
                     System.out.println("------------------------------- URL ----------------------" + jObject.getString(Webhose.URL));
                     System.out.println("------------------------------- SITE ----------------------" + threadObject.getString(Webhose.SITE));
