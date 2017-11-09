@@ -8,7 +8,7 @@ public class Webhose {
 
     public static final String BASE_URL="http://webhose.io/productFilter";
     public static final String TOKEN = "token";
-    public static final String API_KEY = "dec130bd-1e05-4205-878c-40521605253c";
+    public static final String API_KEY = "YOUR_API_KEY";
     public static final String FORMAT = "format";
     public static final String FORMAT_VALUE = "json";
     public static final String QUERY = "q";

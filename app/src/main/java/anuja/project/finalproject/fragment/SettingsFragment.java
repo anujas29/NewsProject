@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -210,12 +212,22 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
 
     }
 
+    private boolean isNetworkConnected() {
+        ConnectivityManager conMgr =  (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     private void UpdatesLocation(){
         Log.e(TAG,"UpdatesLocation() is called....");
         if (PermissionChecker.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
             Log.e(TAG,"Check Permissions");
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocation, this);
+        if(PermissionChecker.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocation, this);
+
+        }
     }
 
     @Override

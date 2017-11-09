@@ -10,5 +10,18 @@
     <string name ="default_location">US</string>
     <string name="empty">List is Empty</string>
     <string name="Setting_name">Settings</string>
+    <string name="Site_name">This is site name</string>
+    <string name="title_description">This is title of a selected product</string>
+    <string name="fab_description">This is Favourite</string>
+    <string name="description">description of product</string>
+    <string name="currency"> Currency</string>
+    <string name="offer_price"> Offer price</string>
+    <string name="price"> Actual price</string>
+    <string name="date"> Product last change date</string>
+    <string name="RemoveFromfab">Remove from favourite....</string>
+    <string name="Addedasfab">Mark as favourite....</string>
+    <string name="NoInternet">No Internet Access.. Plz turn on your internet and restart app !!!</string>
+
+
 
 </resources>

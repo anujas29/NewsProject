@@ -37,7 +37,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String TAG = "SyncAdapter";
     Context mContext;
     public static final String ACTION_DATA_UPDATED = "anuja.project.finalproject.ACTION_DATA_UPDATED";
-    public static final int SYNC_INTERVAL = 10*60*60;//24 hours
+    public static final int SYNC_INTERVAL = 60 * 60 * 24;
     private static final String ACCOUNT_TYPE = "com.anuja.finalproject";
     private static final String ACCOUNT_NAME = "Default Account";
     String location="";

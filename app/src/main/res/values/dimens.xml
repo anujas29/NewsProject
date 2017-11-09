@@ -10,5 +10,20 @@
     <dimen name="widget_frame_height">30dp</dimen>
     <dimen name="padding_right">10dp</dimen>
     <dimen name="padding_end">10dp</dimen>
+    <dimen name="layout_weight">1dp</dimen>
     <dimen name="paddingStartEnd">3dp</dimen>
+    <dimen name="elevation_size">8dp</dimen>
+    <dimen name="Card_radius">4dp</dimen>
+    <dimen name="padding">16dp</dimen>
+    <dimen name="layout_width_height">100dp</dimen>
+    <dimen name="layout_marginBottom">-40dp</dimen>
+    <dimen name="text_size">12sp</dimen>
+    <dimen name="margin_start">48dp</dimen>
+    <dimen name="margin_end">64dp</dimen>
+    <dimen name="padding_top">15dp</dimen>
+    <dimen name="layout_width">0dp</dimen>
+    <dimen name="paddingtop">24dp</dimen>
+    <dimen name="marginStartEnd">4dp</dimen>
+    <dimen name="layout_padding">8dp</dimen>
+
 </resources>
