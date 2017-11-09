@@ -10,9 +10,6 @@ import java.util.List;
  * Created by USER on 17-10-2017.
  */
 
-//http://saulmm.github.io/mastering-coordinator
-    //http://coderzpassion.com/working-appbarlayout-like-whatsapp/
-
 public class MyPagerAdapter extends FragmentPagerAdapter
 {
 

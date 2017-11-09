@@ -16,74 +16,61 @@ import anuja.project.finalproject.data.ProductContract;
 
 public class WidgetService extends RemoteViewsService {
 
-
-
         @Override
         public RemoteViewsFactory onGetViewFactory(Intent intent) {
             return new RemoteViewsFactory() {
-                private Cursor data=null;
+                private Cursor CursorData=null;
                 @Override
                 public void onCreate() {
 
                 }
-
                 @Override
-                public void onDataSetChanged() {//notifyAppWidgetViewDataChanged()
+                public void onDataSetChanged() {
                     System.out.println("----------------------- T1-------------------------------------------");
-                    if (data != null) {
-                        data.close();
+                    if (CursorData != null) {
+                        CursorData.close();
                     }
-                    // This method is called by the app hosting the widget (e.g., the launcher)
-                    // However, our ContentProvider is not exported so it doesn't have access to the
-                    // data. Therefore we need to clear (and finally restore) the calling identity so
-                    // that calls use our process and permission so that we can get the data from content ptovider
-                    final long identityToken= Binder.clearCallingIdentity();
-                    data = getContentResolver().query(
+
+                    final long token= Binder.clearCallingIdentity();
+                    CursorData = getContentResolver().query(
                             ProductContract.ProductEntry.CONTENT_URI,
                             ProductContract.ProductEntry.WIDGET_COLUMNS,
                             null,
                             null,
                             null
                     );
-                    Binder.restoreCallingIdentity(identityToken);
+                    Binder.restoreCallingIdentity(token);
                 }
 
                 @Override
                 public void onDestroy() {
                     System.out.println("--------------------------- T2---------------------------------------");
-                    if (data != null) {
-                        data.close();
-                        data = null;
+                    if (CursorData != null) {
+                        CursorData.close();
+                        CursorData = null;
                     }
                 }
 
                 @Override
                 public int getCount() {
-                    System.out.println("------------------------ t3------------------------------------------"+data.getCount());
-                    return data == null ? 0 : data.getCount();
+                    System.out.println("------------------------ t3------------------------------------------"+CursorData.getCount());
+                    return CursorData == null ? 0 : CursorData.getCount();
                 }
 
                 @Override
                 public RemoteViews getViewAt(int position) {
                     System.out.println("-------------------------- t4----------------------------------------");
-                    if(position == AdapterView.INVALID_POSITION || data == null || !data.moveToPosition(position)){
+                    if(position == AdapterView.INVALID_POSITION || CursorData == null || !CursorData.moveToPosition(position)){
                         return null;
                     }
-                    RemoteViews views = new RemoteViews(getPackageName(),
+                    RemoteViews remote_views = new RemoteViews(getPackageName(),
                             R.layout.widget_item);
-                    views.setTextViewText(R.id.title_widget,data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_TITLE)));
+                    remote_views.setTextViewText(R.id.product,CursorData.getString(CursorData.getColumnIndex(ProductContract.ProductEntry.COLUMN_TITLE)));
+                    final Intent view_intent = new Intent();
+                    view_intent.setData(ProductContract.ProductEntry.CONTENT_URI);
+                    remote_views.setOnClickFillInIntent(R.id.product_list,view_intent);
 
-                    final Intent fillInIntent = new Intent();
-                    fillInIntent.setData(ProductContract.ProductEntry.CONTENT_URI);
-                    views.setOnClickFillInIntent(R.id.widget_list_item_root,fillInIntent);
-
-                    return views;
-                }
-
-                @Override
-                public RemoteViews getLoadingView() {
-                    System.out.println("------------------------- t5-----------------------------------------");
-                    return new RemoteViews(getPackageName(),R.layout.widget_item);
+                    return remote_views;
                 }
 
                 @Override
@@ -94,17 +81,25 @@ public class WidgetService extends RemoteViewsService {
                 }
 
                 @Override
-                public long getItemId(int position) {
-                    System.out.println("------------------------- t7-----------------------------------------");
-                    if(data.moveToPosition(position))
-                        return data.getInt(data.getColumnIndex(ProductContract.ProductEntry._ID));
-                    return position;
+                public RemoteViews getLoadingView() {
+                    System.out.println("------------------------- t5-----------------------------------------");
+                    return new RemoteViews(getPackageName(),R.layout.widget_item);
                 }
 
                 @Override
                 public boolean hasStableIds() {
                     return true;
                 }
+
+                @Override
+                public long getItemId(int position) {
+                    System.out.println("------------------------- t7-----------------------------------------");
+                    if(CursorData.moveToPosition(position))
+                        return CursorData.getInt(CursorData.getColumnIndex(ProductContract.ProductEntry._ID));
+                    return position;
+                }
+
+
             };
         }
     }

@@ -7,4 +7,8 @@
     <dimen name="layout_margin">5dp</dimen>
     <dimen name="activity_margin_top">16dp</dimen>
     <dimen name="appbar_layout_height">300dp</dimen>
+    <dimen name="widget_frame_height">30dp</dimen>
+    <dimen name="padding_right">10dp</dimen>
+    <dimen name="padding_end">10dp</dimen>
+    <dimen name="paddingStartEnd">3dp</dimen>
 </resources>

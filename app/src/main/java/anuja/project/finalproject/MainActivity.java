@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements SaleAdapter.CallB
         setSupportActionBar(mToolbar);
         setupMyPager(mViewPager);
         mTabs.setupWithViewPager(mViewPager);
-
-        System.out.println("---------------------------- MainActivity ---------------------------------");
         Cursor countCursor =this.getContentResolver().query(ProductContract.ProductEntry.CONTENT_URI,
                 new String[] {"count(*) AS count"},
                 null,
@@ -81,13 +79,13 @@ public class MainActivity extends AppCompatActivity implements SaleAdapter.CallB
                 null);
         countCursor.moveToFirst();
         int count = countCursor.getInt(0);
-        Log.e(TAG, "Counting db size = "+count);
-        System.out.println("---------------------------- Counting columns in db =  ---------------------------------"+count);
+        Log.e(TAG, "No of data present... = "+count);
+
         if(count == 0){
-            Log.e(TAG, "Calling Sync");
+            Log.e(TAG, "Calling Sync.....");
             SyncAdapter.Sync(this);
         }else {
-            Log.e(TAG, "Calling initializeAdapter");
+            Log.e(TAG, "Calling initializeAdapter.....");
             SyncAdapter.initializeAdapter(this);
         }
 
@@ -110,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements SaleAdapter.CallB
 
     @Override
     public void ItemSelected(Uri selectedUri) {
-        Log.e(TAG,"This is phone");
         startActivity(new Intent(MainActivity.this, DetailFragment.class).
                 setData(selectedUri));
     }

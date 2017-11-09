@@ -58,15 +58,7 @@ public class FavouriteFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        System.out.println("-------------------------FavouriteFragment onCreateLoader ------------------------------------------------");
-
-//        return new CursorLoader(getActivity()
-//                , NewsContract.NewsEntry.CONTENT_URI
-//                ,null
-//                , NewsContract.NewsEntry.COLUMN_FAV+" = ?"
-//                ,new String[]{String.valueOf(1)}, ""+NewsContract.NewsEntry._ID+" ASC");
-
-        Log.e(TAG," OnCreateLoader");
+        Log.e(TAG,"Inside OnCreateLoader......");
         Uri uri = ProductContract.ProductEntry.CONTENT_URI;
         return new CursorLoader(getActivity()
                 , uri
@@ -74,29 +66,23 @@ public class FavouriteFragment extends Fragment implements LoaderManager.LoaderC
                 ,ProductContract.ProductEntry.COLUMN_FAV+" = ?"
                 ,new String[]{String.valueOf(1)}
                 ,ProductContract.ProductEntry._ID+" ASC");
-
-
-
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        System.out.println("-------------------------FavouriteFragment onLoadFinished ------------------------------------------------");
-        Log.e(TAG," OnLoadFinishedd datasize = " + data.getCount());
+        Log.e(TAG,"Inside OnLoadFinishedd datasize = " + data.getCount());
         mSaleAdapter.swap(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        System.out.println("-------------------------FavouriteFragment onLoaderReset ------------------------------------------------");
-        Log.e(TAG," OnLoaderReset");
+        Log.e(TAG," Inside onLoaderReset....");
         mSaleAdapter.swap(null);
 
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        System.out.println("------------------------- FavouriteFragment onActivityCreated ------------------------------------------------");
         getLoaderManager().initLoader(CURSOR_LOADER,null,this);
         super.onActivityCreated(savedInstanceState);
     }

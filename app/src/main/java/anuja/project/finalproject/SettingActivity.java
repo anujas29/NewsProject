@@ -32,9 +32,7 @@ public class SettingActivity extends AppCompatActivity {
 
         mSettingFragment = new SettingsFragment();
         getFragmentManager().beginTransaction().replace(R.id.frameLayout,mSettingFragment).commit();
-
         setSupportActionBar(mToolbar);
-
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

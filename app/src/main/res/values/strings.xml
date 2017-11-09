@@ -1,13 +1,14 @@
 <resources>
-    <string name="app_name">FinalProject</string>
+    <string name="app_name">DFS</string>
     <string name="image_description">this is a product image</string>
     <string name="product_description">this is a product name</string>
     <string name="share">Share</string>
     <string name ="removeFromFavorite">Remove From Favorite</string>
-    <string name="title_action_setting">Setting</string>
+    <string name="title_action_setting">Settings</string>
     <string name ="location">keyLocation</string>
     <string name ="title_location">Set Your Current Location</string>
     <string name ="default_location">US</string>
     <string name="empty">List is Empty</string>
+    <string name="Setting_name">Settings</string>
 
 </resources>

@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="widget_title_color">#000000</color>
-    <color name="windowBackground">#FFFFFF</color>
+    <color name="txt_color">#000000</color>
+    <color name="Background">#FFFFFF</color>
 </resources>

@@ -59,8 +59,7 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
         addPreferencesFromResource(R.xml.location_pref);
         mContext = getActivity();
 
-        //set up google api
-        Log.e(TAG, "setting the api onCreate");
+        Log.e(TAG, "setting  onCreate");
         mGoogleApiClient = new GoogleApiClient.Builder(mContext)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -72,10 +71,10 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 if(!mGoogleApiClient.isConnected()) {
-                    Log.e(TAG, "locatio preference is clicked .. connecting the api");
+                    Log.e(TAG, "location preference is clicked .. connecting the api");
                     mGoogleApiClient.connect();// connect api
                 }else{
-                    Log.e(TAG, "locatio preference is clicked .. api is connected already");
+                    Log.e(TAG, "location preference is clicked .. api is connected already");
                     SettingRequest();
                 }
                 return true;
@@ -86,9 +85,8 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
     }
 
     @Override
-    public void onStart() {//connects our google api
+    public void onStart() {
         super.onStart();
-        // mGoogleApiClient.connect();
     }
 
     @Override
@@ -99,7 +97,7 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
     }
 
     @Override
-    public void onStop() {// disconnects api
+    public void onStop() {
         if(mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -113,19 +111,16 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
         super.onPause();
     }
 
-
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.location))){
-            Log.e(TAG, " syncImmediately from onSharedPreferenceChanged ");
-            locatioPreferenceToValue(Location);// update the location preference summary with the new value added
+            Log.e(TAG, " calling syncAdapter from onSharedPreferenceChanged ");
+            locatioPreferenceToValue(Location);
             SyncAdapter.Sync(getActivity());
         }
     }
 
     private void locatioPreferenceToValue(Preference preference){
-        //set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
         String key = preference.getKey();
         String value= PreferenceManager
@@ -144,8 +139,6 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
         if(preference.getKey().equals(getString(R.string.location))){
             preference.setSummary(stringValue);
         }
-
-
         return true;
     }
 
@@ -153,17 +146,15 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e(TAG,"OnActivityResult");
         switch (requestCode) {
-// Check for the integer request code originally supplied to startResolutionForResult().
+
             case REQUEST_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.e(TAG,"Activity Result is ok .. requestLocationUpdates is fired");
                         UpdatesLocation();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.e(TAG,"Activity Result is canceled ..call settingRequest to fire a dialog again!");
 
-                        //settingsRequest();
                         break;
                 }
                 break;
@@ -172,8 +163,7 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
-        Log.e(TAG, "inside onConnected ");
+        Log.e(TAG, "Inside onConnected ");
         mLocation = LocationRequest.create();
         mLocation.setPriority(LocationRequest.PRIORITY_LOW_POWER);
         mLocation.setInterval(1000);
@@ -187,13 +177,13 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
     }
 
     public void SettingRequest(){
-        Log.e(TAG,"settingRequest");
-        LocationSettingsRequest.Builder Locationbuilder = new LocationSettingsRequest.Builder()
+        Log.e(TAG,"SettingRequest...");
+        LocationSettingsRequest.Builder Location_Builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest( mLocation);
-        Locationbuilder.setAlwaysShow(true);//Whether or not location is required by the calling app in order to continue.This changes the wording/appearance of the dialog accordingly.
+        Location_Builder.setAlwaysShow(true);//Whether or not location is required by the calling app in order to continue.This changes the wording/appearance of the dialog accordingly.
 
         PendingResult<LocationSettingsResult> pending_result =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,Locationbuilder.build());
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,Location_Builder.build());
         pending_result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
             @Override
             public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
@@ -221,7 +211,7 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
     }
 
     private void UpdatesLocation(){
-        Log.e(TAG,"RequestLocationUpdates is called");
+        Log.e(TAG,"UpdatesLocation() is called....");
         if (PermissionChecker.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
             Log.e(TAG,"Check Permissions");
         }
@@ -230,16 +220,15 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "inside onConnectionFailed");
+        Log.e(TAG, "Inside onConnectionFailed...");
 
     }
 
     @Override
     public void onLocationChanged(android.location.Location location) {
-        Log.e(TAG ,"OnLOcationChanged called");
-        Log.e(TAG ,"Location : " + location.toString());
+        Log.e(TAG ,"OnLOcationChanged called current location..."+location.toString());
 
-        //-- getting the country name form the location object
+        //-- getting the country code form the location object
         Geocoder gcd = new Geocoder(mContext, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -251,7 +240,7 @@ public class SettingsFragment  extends PreferenceFragment implements GoogleApiCl
         {
             String currentName=addresses.get(0).getCountryCode();
 
-            Log.e(TAG,"Update the sharedPreferences with the location "+currentName);
+            Log.e(TAG,"Update the sharedPreferences with the current location "+currentName);
             PreferenceManager.getDefaultSharedPreferences(mContext).edit()
                     .putString(getString(R.string.location),currentName).apply();
         }

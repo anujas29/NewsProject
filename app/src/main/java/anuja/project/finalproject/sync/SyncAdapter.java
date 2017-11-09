@@ -40,11 +40,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_INTERVAL = 10*60*60;//24 hours
     private static final String ACCOUNT_TYPE = "com.anuja.finalproject";
     private static final String ACCOUNT_NAME = "Default Account";
+    String location="";
 
 
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
-        System.out.println("---------------------------- NewsSyncAdapter ---------------------------------");
         mContext = getContext();
     }
 
@@ -57,7 +57,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     public static Account createSyncAccount(Context context) {
-        System.out.println("-------------------- createDummyAccount ----------------------------");
+        Log.e(TAG, "createSyncAccount....");
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         Account newAccount = new Account(
                 context.getString(R.string.app_name), ACCOUNT_TYPE);
@@ -67,11 +67,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 return null;
             }
         }
+        Log.e(TAG, "Account created...."+newAccount);
         return newAccount;
     }
 
     public static void Sync(Context context) {
-        System.out.println("---------------------------- syncImmediately ---------------------------------");
+        Log.e(TAG, " Sync....");
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -79,38 +80,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     public static void initializeAdapter(Context context) {
-        System.out.println("-------------------- initializeSyncAdapter ----------------------------");
-        Log.e("NewsSyncAdapter  ", "initialize SyncAdapter");
+        Log.e(TAG, " initializeAdapter....");
         Account ACCOUNT = createSyncAccount(context);
         ContentResolver.setSyncAutomatically(ACCOUNT, ProductContract.AUTHORITY,true);//Set whether or not the provider is synced when it receives a network tickle.
         ContentResolver.addPeriodicSync(ACCOUNT,ProductContract.AUTHORITY,Bundle.EMPTY,SYNC_INTERVAL);//This schedules your sync adapter to run after a certain amount of time
     }
-
-
-
-
-
-
-//    public void fetchJson()
-//    {
-//
-//        WebhoseInterface apiService = WebhoseClient.getClient().create(WebhoseInterface.class);
-//        Call<ProductResponse> call = apiService.getProducts("api_key","dresses",true);
-//
-//        call.enqueue(new Callback<ProductResponse>() {
-//            @Override
-//            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-//                ArrayList<Products> products = response.body().getResults();
-//                Log.d(TAG, "Number of products received: " + products.size());
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ProductResponse> call, Throwable t) {
-//              //System.out.println("------------------------- inside onFailure ------------------:");
-//                Log.d(TAG, "inside onFailure ");
-//            }
-//        });
-//    }
 
     /**
      * Called by the framework to do remote synchronization of data.
@@ -126,12 +100,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, final Bundle syncBundle, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        System.out.println("-------------------- onPerformSync ----------------------------");
-        Log.d(TAG, "<<<<onPerformSync");
 
+        Log.d(TAG, "Inside onPerformSync.....");
         int deleted = deleteOldDataFromDatabase();
-        System.out.println("-------------------- Delete Old Data ----------------------------"+deleted);
-        Log.e(TAG, "Delete Old Data " + deleted + " deleted");
+        Log.e(TAG, "Inside onPerformSync Delete Old Data " + deleted + " deleted");
 
         int i;
         for( i=0 ; i<2 ; i++) {
@@ -142,16 +114,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String jsonStr = null;
             StringBuilder lines = new StringBuilder();
 
-            //fetchJson();
-            String location="";
-            if(i==0){
-//                location = "global";
-//                location = WebhoseAPI.QUERY_VALUE_GLOBAL;
-                Log.e(TAG, "Global Location = "+location);
-            }else{
+            if(i==1)
+            {
                 location = FindLocation.Location(mContext);
-                //location = "local";
-                Log.e(TAG, "Local Location = "+location);
+                Log.e(TAG, "Local Location..... = "+location);
             }
 
             try {
@@ -165,7 +131,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             .appendQueryParameter(Webhose.SIZE, Webhose.SIZE_VALUE)
                             .build();
 
-                    Log.e(TAG, "inside if Built URI " + builtUri.toString());
+                    Log.e(TAG, "inside if Built URI ::: " + builtUri.toString());
                     URL url = new URL(builtUri.toString());
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestMethod("GET");
@@ -173,7 +139,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
                 else
                 {
-                    System.out.println("--------------------- inside sync adapter else sync------------------------------------------"+location);
                     Uri builtUri = Uri.parse(Webhose.BASE_URL).buildUpon()
                             .appendQueryParameter(Webhose.TOKEN, Webhose.API_KEY)
                             .appendQueryParameter(Webhose.FORMAT, Webhose.FORMAT_VALUE)
@@ -191,8 +156,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 }
 
-
-
                 InputStream inputStream = urlConnection.getInputStream();
                 if (inputStream == null) {
                     return;
@@ -206,8 +169,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
                 jsonStr = lines.toString();
                 Log.e(TAG, type + " ---- " + jsonStr);
-                System.out.println("-------------------------------------------jsonStr::::" + jsonStr);
-                //***************************_DATABASE_*******
+
+                //fetch data from server and store in local data
                 fetchJsonAndSave(jsonStr,i);
 
             } catch (IOException e) {
@@ -226,12 +189,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
-        mContext.sendBroadcast(dataUpdatedIntent);// notify components waiting for updates in our app with the db update
+        // notify components waiting for updates in our app with the db update
+        mContext.sendBroadcast(dataUpdatedIntent);
 
     }
 
     private int deleteOldDataFromDatabase(){
-        //Delete old date except favourite ones
+        //Delete old date except fav
         return mContext.getContentResolver().delete(
                 ProductContract.ProductEntry.CONTENT_URI
                 , ProductContract.ProductEntry.COLUMN_FAV+" = ?"
@@ -242,9 +206,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         if (jsonStr != null) {
             try {
-                String type = "";
                 JSONObject jObjectAll = new JSONObject(jsonStr);
-                // do we have an error?(404)
+
                 JSONArray jArray = jObjectAll.getJSONArray(Webhose.PRODUCTS);
                 Vector<ContentValues> contentvalue_vector = new Vector<ContentValues>(jArray.length());
 
@@ -276,48 +239,29 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     Values.put(ProductContract.ProductEntry.COLUMN_PRICE,productModel.mPrice);
                     Values.put(ProductContract.ProductEntry.COLUMN_CURRENCY,productModel.mCurrency);
                     Values.put(ProductContract.ProductEntry.COLUMN_OFFER,productModel.mOffer);
-//                    Values.put(ProductContract.ProductEntry.COLUMN_IMAGE,productModel.mImage);
                     Values.put(ProductContract.ProductEntry.COLUMN_IMAGE,jsonArray.getString(0));
 
-                    System.out.println("------------------------------- before global ----------------------" );
                     if(i==0){
-
                         Values.put(ProductContract.ProductEntry.COLUMN_GLOBAL_SALE,1);
-                        System.out.println("------------------------------- global ----------------------" );
                     }else if(i == 1){
-
-                        System.out.println("------------------------------- local ----------------------" );
                         Values.put(ProductContract.ProductEntry.COLUMN_LOCAL_SALE,1);
                     }
 
                     contentvalue_vector.add(Values);
-
-                    System.out.println("------------------------------- i ----------------------" + j);
-                    System.out.println("------------------------------- UUID ----------------------" + jObject.getString(Webhose.UUID));
-                    System.out.println("------------------------------- URL ----------------------" + jObject.getString(Webhose.URL));
-                    System.out.println("------------------------------- SITE ----------------------" + threadObject.getString(Webhose.SITE));
-                    System.out.println("------------------------------- TITLE ----------------------" + threadObject.getString(Webhose.TITLE));
-                    System.out.println("------------------------------- NAME ----------------------" + jObject.getString(Webhose.NAME));
-                    System.out.println("------------------------------- DESCRIPTION ----------------------" + jObject.getString(Webhose.DESCRIPTION));
-                    System.out.println("------------------------------- IMAGE ----------------------" + jsonArray.getString(0));
-                    System.out.println("-----------------------------------------------------------------" );
                 }
 
-                int insert =0;
+                int inserted =0;
                 if(contentvalue_vector.size() > 0){
                     ContentValues[] cvArray = new ContentValues[contentvalue_vector.size()];
                     contentvalue_vector.toArray(cvArray);
 
                     //insert new data
-                    insert=mContext.getContentResolver().bulkInsert(
+                    inserted=mContext.getContentResolver().bulkInsert(
                             ProductContract.ProductEntry.CONTENT_URI
                             ,cvArray);
 
-                    Log.e(TAG, "FetchWeatherTask Completed. " + insert + " Inserted "+ type+"");
+                    Log.e(TAG, "SyncAdapter Completed. " + inserted + " Data Inserted ");
                 }
-
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }

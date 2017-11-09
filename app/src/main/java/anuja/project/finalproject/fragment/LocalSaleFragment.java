@@ -55,22 +55,7 @@ public class LocalSaleFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        System.out.println("-------------------------LocalSaleFragment onCreateLoader ------------------------------------------------");
-
-//        return new CursorLoader(getActivity()
-//                , NewsContract.NewsEntry.CONTENT_URI
-//                ,null
-//                , NewsContract.NewsEntry.COLUMN_FAV+" = ?"
-//                ,new String[]{String.valueOf(1)}, ""+NewsContract.NewsEntry._ID+" ASC");
-
-
-//        return new CursorLoader(getActivity()
-//                , NewsContract.NewsEntry.CONTENT_URI
-//                ,null
-//                , NewsContract.NewsEntry.COLUMN_LOCAL+" = ?"+" AND "+NewsContract.NewsEntry.COLUMN_FAV+" = ?"
-//                ,new String[]{String.valueOf(1),String.valueOf(0)}, ""+NewsContract.NewsEntry._ID+" ASC");
-
-        Log.e(TAG," OnCreateLoader");
+        Log.e(TAG," Inside onCreateLoader....");
         Uri uri = ProductContract.ProductEntry.CONTENT_URI;
         return new CursorLoader(getActivity()
                 , uri
@@ -85,22 +70,20 @@ public class LocalSaleFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        System.out.println("-------------------------LocalSaleFragment onLoadFinished ------------------------------------------------");
-        Log.e(TAG," OnLoadFinishedd datasize = " + data.getCount());
+        Log.e(TAG,"Inside onLoadFinished datasize = " + data.getCount());
         mSaleAdapter.swap(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        System.out.println("-------------------------LocalSaleFragment onLoaderReset ------------------------------------------------");
-        Log.e(TAG," OnLoaderReset");
+        Log.e(TAG," Inside onLoaderReset....");
         mSaleAdapter.swap(null);
 
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        System.out.println("------------------------- LocalSaleFragment onActivityCreated ------------------------------------------------");
+        Log.e(TAG," Inside onActivityCreated....");
         getLoaderManager().initLoader(CURSOR_LOADER,null,this);
         super.onActivityCreated(savedInstanceState);
     }

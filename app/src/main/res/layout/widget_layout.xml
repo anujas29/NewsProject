@@ -3,47 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:orientation="vertical">
     <FrameLayout
         android:id="@+id/widget_header"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="@dimen/widget_frame_height"
         android:background="@color/colorPrimary">
         <TextView
-            android:layout_width="wrap_content"
+
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
+            android:layout_width="wrap_content"
             android:textColor="@color/colorAccent"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_gravity="center"/>
-
-
+            android:text="@string/app_name"
+            android:layout_gravity="center"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
     </FrameLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/windowBackground">
+        android:background="@color/Background">
         <ListView
             android:id="@+id/widget_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
+            android:divider="@color/colorAccent"
+            android:dividerHeight="@dimen/cardview_compat_inset_shadow"
             tools:listitem="@layout/widget_item"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
 
             />
         <TextView
-            android:id="@+id/widget_empty"
+            android:id="@+id/empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:textAppearance="?android:textAppearanceLarge"
-
+            android:gravity="center"
             android:visibility="gone"/>
+
     </FrameLayout>
 
 </LinearLayout>
