@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="@dimen/Card_radius"
+        android:elevation="@dimen/elevation_size"
+        android:layout_margin="@dimen/layout_margin"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="@dimen/layout_width_height"
+                android:layout_height="@dimen/layout_width_height"
+                android:id="@+id/image_view"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="@dimen/padding_right"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/padding_right"
+                android:contentDescription="@string/image_description"
+                />
+
+        <TextView
+            android:id="@+id/item_name"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@+id/image_view"
+            android:layout_toEndOf="@+id/image_view"
+            android:layout_marginTop="@dimen/layout_margin"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:contentDescription="@string/product_description"
+            />
+            <TextView
+                android:id="@+id/site_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size"
+                android:layout_toRightOf="@id/image_view"
+                android:layout_alignBottom="@+id/item_name"
+                android:layout_toEndOf="@id/image_view"
+                android:layout_marginBottom="@dimen/layout_marginBottom"
+                android:contentDescription="@string/Site_name"
+
+                />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
