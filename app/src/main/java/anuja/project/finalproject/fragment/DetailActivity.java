@@ -169,7 +169,7 @@ public class DetailActivity extends Fragment implements LoaderManager.LoaderCall
             Log.d(TAG, "Remove from favourite....");
             cv.put(ProductContract.ProductEntry.COLUMN_FAV,0);
             mFabButton.setImageResource(ic_favorite_white);
-            Toast.makeText(getActivity(),getString(R.string.RemoveFromfab),Toast.LENGTH_LONG).show();;
+            Toast.makeText(getActivity(),getString(R.string.RemoveFromfab),Toast.LENGTH_LONG).show();
             favorite_flag=false;
         } else {
             Log.d(TAG, "Mark favourite....");
