@@ -22,6 +22,9 @@
     <string name="Addedasfab">Mark as favourite....</string>
     <string name="NoInternet">No Internet Access.. Plz turn on your internet and restart app !!!</string>
 
+    <string name="txtprice">Price</string>
+    <string name="txtpriceoffer">Offer Price</string>
+
 
 
 </resources>

@@ -27,11 +27,9 @@ import java.util.Vector;
 
 import anuja.project.finalproject.FindLocation;
 import anuja.project.finalproject.R;
-import anuja.project.finalproject.data.ProductContract;
-import anuja.project.finalproject.rest.ProductModel;
+import anuja.project.finalproject.data.NewsContract;
+import anuja.project.finalproject.rest.News;
 import anuja.project.finalproject.rest.Webhose;
-
-import static android.R.attr.type;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String TAG = "SyncAdapter";
@@ -76,14 +74,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(createSyncAccount(context),ProductContract.AUTHORITY, bundle);
+        ContentResolver.requestSync(createSyncAccount(context), NewsContract.AUTHORITY, bundle);
     }
 
     public static void initializeAdapter(Context context) {
         Log.e(TAG, " initializeAdapter....");
         Account ACCOUNT = createSyncAccount(context);
-        ContentResolver.setSyncAutomatically(ACCOUNT, ProductContract.AUTHORITY,true);//Set whether or not the provider is synced when it receives a network tickle.
-        ContentResolver.addPeriodicSync(ACCOUNT,ProductContract.AUTHORITY,Bundle.EMPTY,SYNC_INTERVAL);//This schedules your sync adapter to run after a certain amount of time
+        ContentResolver.setSyncAutomatically(ACCOUNT, NewsContract.AUTHORITY,true);//Set whether or not the provider is synced when it receives a network tickle.
+        ContentResolver.addPeriodicSync(ACCOUNT,NewsContract.AUTHORITY,Bundle.EMPTY,SYNC_INTERVAL);//This schedules your sync adapter to run after a certain amount of time
     }
 
     /**
@@ -102,83 +100,67 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
 
         Log.d(TAG, "Inside onPerformSync.....");
-        int deleted = deleteOldDataFromDatabase();
-        Log.e(TAG, "Inside onPerformSync Delete Old Data " + deleted + " deleted");
+      //  int deleted = deleteOldDataFromDatabase();
+       // Log.e(TAG, "Inside onPerformSync Delete Old Data " + deleted + " deleted");
 
         int i;
         for( i=0 ; i<2 ; i++) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader bufferedReader = null;
-            String line;
+            String type="";
+            String str;
             String jsonStr = null;
-            StringBuilder lines = new StringBuilder();
+            StringBuilder str_lines = new StringBuilder();
 
-            if(i==1)
-            {
+            if(i==1){
+                type = "global";
+                location = Webhose.QUERY_GLOBAL;
+                Log.e(TAG, "Global Location = "+location);
+            }else{
                 location = FindLocation.Location(mContext);
-                Log.e(TAG, "Local Location..... = "+location);
+                type = "local";
+                Log.e(TAG, "Local Location = "+location);
             }
 
             try {
-
-                if(i==0) {
-                    Uri builtUri = Uri.parse(Webhose.BASE_URL).buildUpon()
-                            .appendQueryParameter(Webhose.TOKEN, Webhose.API_KEY)
-                            .appendQueryParameter(Webhose.FORMAT, Webhose.FORMAT_VALUE)
-                            .appendQueryParameter(Webhose.QUERY, Webhose.QUERY_VALUE)
-                            .appendQueryParameter(Webhose.ON_SALE, Webhose.ON_SALE_VALUE)
-                            .appendQueryParameter(Webhose.SIZE, Webhose.SIZE_VALUE)
-                            .build();
-
-                    Log.e(TAG, "inside if Built URI ::: " + builtUri.toString());
-                    URL url = new URL(builtUri.toString());
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.connect();
-                }
-                else
-                {
-                    Uri builtUri = Uri.parse(Webhose.BASE_URL).buildUpon()
-                            .appendQueryParameter(Webhose.TOKEN, Webhose.API_KEY)
-                            .appendQueryParameter(Webhose.FORMAT, Webhose.FORMAT_VALUE)
-                            .appendQueryParameter(Webhose.QUERY, Webhose.QUERY_VALUE)
-                            .appendQueryParameter(Webhose.ON_SALE, Webhose.ON_SALE_VALUE)
-                            .appendQueryParameter(Webhose.SIZE, Webhose.SIZE_VALUE)
-                            .appendQueryParameter(Webhose.COUNTRY,location.toUpperCase())
-                            .build();
-
-                    Log.e(TAG, "inside else Built URI :::: " + builtUri.toString());
-                    URL url = new URL(builtUri.toString());
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.connect();
-
-                }
+                Uri builtUri=Uri.parse(Webhose.WEBHOSE_URL).buildUpon()
+                        .appendQueryParameter(Webhose.TOKEN,Webhose.APIKEY)
+                        .appendQueryParameter(Webhose.FORMAT,Webhose.VALUE)
+                        .appendQueryParameter(Webhose.QUERY, location)
+                        .appendQueryParameter(Webhose.SIZE,Webhose.SIZE_VALUE)
+                        .appendQueryParameter(Webhose.LANGUAGE,Webhose.LANGUAGE_VALUE)
+                        .appendQueryParameter(Webhose.SORT,Webhose.SORT_VALUE)
+                        .appendQueryParameter(Webhose.SITE_TYPE,Webhose.SITE_TYPE_VALUE)
+                        .build();
+                Log.e(TAG,"Built URI " + builtUri.toString());
+                URL url = new URL(builtUri.toString());
+                urlConnection = (HttpURLConnection)url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
-                if (inputStream == null) {
-                    return;
+                if(inputStream==null){
+                    return ;
                 }
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                while ((line = bufferedReader.readLine()) != null) {
-                    lines.append(line);
+                while ((str = bufferedReader.readLine()) != null){
+                    str_lines.append(str);
                 }
-                if (lines.length() == 0) {
-                    return;
+                if(str_lines.length() == 0){
+                    return ;
                 }
-                jsonStr = lines.toString();
-                Log.e(TAG, type + " ---- " + jsonStr);
-
-                //fetch data from server and store in local data
-                fetchJsonAndSave(jsonStr,i);
+                jsonStr = str_lines.toString();
+                Log.e(TAG ,type+" ---- " + jsonStr);
+                //***************************_DATABASE_*******
+                //fetchJsonAndSave(jsonStr,i);//------
 
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                if (urlConnection != null)
+            }finally {
+                if(urlConnection != null)
                     urlConnection.disconnect();
-                if (bufferedReader != null) {
+                if(bufferedReader != null){
                     try {
                         bufferedReader.close();
                     } catch (IOException e) {
@@ -194,13 +176,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
-    private int deleteOldDataFromDatabase(){
-        //Delete old date except fav
-        return mContext.getContentResolver().delete(
-                ProductContract.ProductEntry.CONTENT_URI
-                , ProductContract.ProductEntry.COLUMN_FAV+" = ?"
-                ,new String[]{String.valueOf(0)});
-    }
+//    private int deleteOldDataFromDatabase(){
+//        //Delete old date except fav
+//        return mContext.getContentResolver().delete(
+//                ProductContract.ProductEntry.CONTENT_URI
+//                , ProductContract.ProductEntry.COLUMN_FAV+" = ?"
+//                ,new String[]{String.valueOf(0)});
+//    }
 
     private void fetchJsonAndSave(String jsonStr, int i) {
 
@@ -208,43 +190,37 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 JSONObject jObjectAll = new JSONObject(jsonStr);
 
-                JSONArray jArray = jObjectAll.getJSONArray(Webhose.PRODUCTS);
+                JSONArray jArray = jObjectAll.getJSONArray(Webhose.NEWS_POSTS);
                 Vector<ContentValues> contentvalue_vector = new Vector<ContentValues>(jArray.length());
 
                 for (int j = 0; j < jArray.length(); j++) {
-                    JSONObject jObject = jArray.getJSONObject(j);
-                    JSONObject threadObject = jObject.getJSONObject(Webhose.SOURCE);
-                    JSONArray jsonArray = jObject.getJSONArray(Webhose.IMAGE);
-                    ProductModel productModel = new ProductModel(
-                            jObject.getString(Webhose.UUID),
-                            jObject.getString(Webhose.URL),
-                            threadObject.getString(Webhose.SITE),
-                            threadObject.getString(Webhose.TITLE),
-                            jObject.getString(Webhose.NAME),
-                            jObject.getString(Webhose.DESCRIPTION),
-                            jObject.getString(Webhose.LASTCHANGE),
-                            jObject.getString(Webhose.PRICE),
-                            jObject.getString(Webhose.CURRENCY),
-                            jObject.getString(Webhose.OFFER));
+                    JSONObject jsonObject = jArray.getJSONObject(j);
+                    JSONObject NewsValue = jsonObject.getJSONObject(Webhose.NEWS_THREAD);
+
+                    News news = new News(
+                            NewsValue.getString(Webhose.UUID),
+                            NewsValue.getString(Webhose.URL),
+                            NewsValue.getString(Webhose.SITE),
+                            NewsValue.getString(Webhose.PUBLISHED_DATE).substring(0,10),
+                            NewsValue.getString(Webhose.TITLE),
+                            jsonObject.getString(Webhose.TEXT),
+                            NewsValue.getString(Webhose.MAIN_IMAGE));
 
                     ContentValues Values = new ContentValues();
 
-                    Values.put(ProductContract.ProductEntry.COLUMN_UUID,productModel.mUUID);
-                    Values.put(ProductContract.ProductEntry.COLUMN_URL,productModel.mUrl);
-                    Values.put(ProductContract.ProductEntry.COLUMN_SITE,productModel.mSite);
-                    Values.put(ProductContract.ProductEntry.COLUMN_TITLE,productModel.mTitle);
-                    Values.put(ProductContract.ProductEntry.COLUMN_NAME,productModel.mName);
-                    Values.put(ProductContract.ProductEntry.COLUMN_DESCRIPTION,productModel.mDescription);
-                    Values.put(ProductContract.ProductEntry.COLUMN_LASTCHANGE,productModel.mLastChange);
-                    Values.put(ProductContract.ProductEntry.COLUMN_PRICE,productModel.mPrice);
-                    Values.put(ProductContract.ProductEntry.COLUMN_CURRENCY,productModel.mCurrency);
-                    Values.put(ProductContract.ProductEntry.COLUMN_OFFER,productModel.mOffer);
-                    Values.put(ProductContract.ProductEntry.COLUMN_IMAGE,jsonArray.getString(0));
+                   // newsValues.put(NewsContract.NewsEntry.COLUMN_NEWS_ID,newsModel.mId);
+                    Values.put(NewsContract.NewsEntry.COLUMN_ID,news.Id);
+                    Values.put(NewsContract.NewsEntry.COLUMN_URL,news.Url);
+                    Values.put(NewsContract.NewsEntry.COLUMN_SITE,news.Site);
+                    Values.put(NewsContract.NewsEntry.COLUMN_DATE,news.Date);
+                    Values.put(NewsContract.NewsEntry.COLUMN_TITLE,news.Title);
+                    Values.put(NewsContract.NewsEntry.COLUMN_TEXT,news.Text);
+                    Values.put(NewsContract.NewsEntry.COLUMN_IMAGE,news.ImagePath);
 
                     if(i==0){
-                        Values.put(ProductContract.ProductEntry.COLUMN_GLOBAL_SALE,1);
+                        Values.put(NewsContract.NewsEntry.COLUMN_GLOBAL,1);
                     }else if(i == 1){
-                        Values.put(ProductContract.ProductEntry.COLUMN_LOCAL_SALE,1);
+                        Values.put(NewsContract.NewsEntry.COLUMN_LOCAL,1);
                     }
 
                     contentvalue_vector.add(Values);
@@ -256,9 +232,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentvalue_vector.toArray(cvArray);
 
                     //insert new data
-                    inserted=mContext.getContentResolver().bulkInsert(
-                            ProductContract.ProductEntry.CONTENT_URI
-                            ,cvArray);
+//                    inserted=mContext.getContentResolver().bulkInsert(
+//                            ProductContract.ProductEntry.CONTENT_URI
+//                            ,cvArray);
 
                     Log.e(TAG, "SyncAdapter Completed. " + inserted + " Data Inserted ");
                 }

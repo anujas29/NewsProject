@@ -113,7 +113,7 @@
                     >
                     <TextView
                         android:id="@+id/price_text"
-                        android:text = "Price"
+                        android:text = "@string/txtprice"
                         android:layout_width="@dimen/layout_width"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -122,7 +122,6 @@
                         android:textStyle="normal|bold" />
                     <TextView
                         android:id="@+id/price"
-                        android:text ="Price Value"
                         android:layout_width="@dimen/layout_width"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -134,7 +133,6 @@
                         />
                     <TextView
                         android:id="@+id/currency"
-                        android:text ="currency"
                         android:layout_width="@dimen/layout_width"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -153,7 +151,7 @@
 
                     >
                     <TextView
-                        android:text = "Offer Price"
+                        android:text = "@string/txtpriceoffer"
                         android:layout_width="@dimen/layout_width"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -163,7 +161,6 @@
                         android:textStyle="normal|bold" />
                     <TextView
                         android:id="@+id/price_offer"
-                        android:text ="Price Value"
                         android:layout_width="@dimen/layout_width"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -175,7 +172,6 @@
                         />
                     <TextView
                         android:id="@+id/currency_offer"
-                        android:text ="currency"
                         android:layout_width="@dimen/layout_width"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

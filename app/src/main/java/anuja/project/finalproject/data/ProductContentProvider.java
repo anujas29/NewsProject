@@ -27,8 +27,8 @@ public class ProductContentProvider  extends ContentProvider {
 
         // Initialize a UriMatcher with no matches by passing in NO_MATCH to the constructor
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(ProductContract.AUTHORITY, ProductContract.PATH_TASKS, SALE);
-        uriMatcher.addURI(ProductContract.AUTHORITY, ProductContract.PATH_TASKS + "/#", SALE_WITH_ID);
+        uriMatcher.addURI(NewsContract.AUTHORITY, NewsContract.PATH_TASKS, SALE);
+        uriMatcher.addURI(NewsContract.AUTHORITY, NewsContract.PATH_TASKS + "/#", SALE_WITH_ID);
 
         return uriMatcher;
     }
@@ -51,9 +51,9 @@ public class ProductContentProvider  extends ContentProvider {
     {
         switch(sUriMatcher.match(uri)){
             case SALE://(DIR) returns multiple rows
-                return ProductContract.ProductEntry.CONTENT_TYPE;
+                return NewsContract.NewsEntry.CONTENT_TYPE;
             case SALE_WITH_ID:
-                return ProductContract.ProductEntry.CONTENT_ITEM_TYPE;
+                return NewsContract.NewsEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: "+uri);
         }
@@ -75,12 +75,12 @@ public class ProductContentProvider  extends ContentProvider {
         switch (sUriMatcher.match(uri)){
 
             case SALE:{
-                returnedCursor = db.query(ProductContract.ProductEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
+                returnedCursor = db.query(NewsContract.NewsEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             }
             case SALE_WITH_ID:{
                 long _id = Long.valueOf(uri.getLastPathSegment());
-                returnedCursor = db.query(ProductContract.ProductEntry.TABLE_NAME,projection,""+ ProductContract.ProductEntry._ID + "=?",new String[]{String.valueOf(_id)},null,null,sortOrder);
+                returnedCursor = db.query(NewsContract.NewsEntry.TABLE_NAME,projection,""+ NewsContract.NewsEntry._ID + "=?",new String[]{String.valueOf(_id)},null,null,sortOrder);
                 //the sent id paremerter is actually the index of the clicked mews in the arrayList the holds the movies + 1
                 // since the saved news in the database are sorted the same sort of the arrayList that holds the news
                 break;
@@ -103,9 +103,9 @@ public class ProductContentProvider  extends ContentProvider {
         long _id;
         switch(sUriMatcher.match(uri)){
             case SALE:{
-                _id=db.insert(ProductContract.ProductEntry.TABLE_NAME,null,values);
+                _id=db.insert(NewsContract.NewsEntry.TABLE_NAME,null,values);
                 if(_id > 0){
-                    returnedUri = ProductContract.ProductEntry.getUriWithId(_id);
+                    returnedUri = NewsContract.NewsEntry.getUriWithId(_id);
                 }else {
                     throw new SQLiteException("Failed to insert into database");
                 }
@@ -130,13 +130,13 @@ public class ProductContentProvider  extends ContentProvider {
         if ( null == selection ) selection = "1";
         switch(sUriMatcher.match(uri)){
             case SALE:{
-                rowsDeleted = db.delete(ProductContract.ProductEntry.TABLE_NAME,selection,selectionArgs);
+                rowsDeleted = db.delete(NewsContract.NewsEntry.TABLE_NAME,selection,selectionArgs);
                 break;
             }
             case SALE_WITH_ID:{
                 long _id = Long.valueOf(uri.getLastPathSegment());
-                rowsDeleted=db.delete(ProductContract.ProductEntry.TABLE_NAME,
-                        ""+ ProductContract.ProductEntry._ID+"= ?",new String[]{String.valueOf(_id)});
+                rowsDeleted=db.delete(NewsContract.NewsEntry.TABLE_NAME,
+                        ""+ NewsContract.NewsEntry._ID+"= ?",new String[]{String.valueOf(_id)});
                 break;
             }
             default:{
@@ -159,9 +159,9 @@ public class ProductContentProvider  extends ContentProvider {
         int rows_affected;
         switch (sUriMatcher.match(uri)){
             case SALE_WITH_ID:{
-                rows_affected = db.update(ProductContract.ProductEntry.TABLE_NAME
+                rows_affected = db.update(NewsContract.NewsEntry.TABLE_NAME
                         ,values
-                        , ProductContract.ProductEntry._ID +" = ?"
+                        , NewsContract.NewsEntry._ID +" = ?"
                         ,new String[]{uri.getLastPathSegment()});
                 break;
             }
@@ -182,7 +182,7 @@ public class ProductContentProvider  extends ContentProvider {
                 int returnCount = 0;
                 try{
                     for(ContentValues value : values){
-                        long _id = db.insert(ProductContract.ProductEntry.TABLE_NAME,null,value);
+                        long _id = db.insert(NewsContract.NewsEntry.TABLE_NAME,null,value);
                         if(_id != -1){
                             returnCount++;
                         }

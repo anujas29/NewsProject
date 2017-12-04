@@ -19,7 +19,7 @@ import java.util.List;
 
 import anuja.project.finalproject.adapters.MyPagerAdapter;
 import anuja.project.finalproject.adapters.SaleAdapter;
-import anuja.project.finalproject.data.ProductContract;
+import anuja.project.finalproject.data.NewsContract;
 import anuja.project.finalproject.fragment.DetailFragment;
 import anuja.project.finalproject.fragment.FavouriteFragment;
 import anuja.project.finalproject.fragment.LocalSaleFragment;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SaleAdapter.CallB
         setSupportActionBar(mToolbar);
         setupMyPager(mViewPager);
         mTabs.setupWithViewPager(mViewPager);
-        Cursor countCursor =this.getContentResolver().query(ProductContract.ProductEntry.CONTENT_URI,
+        Cursor countCursor =this.getContentResolver().query(NewsContract.NewsEntry.CONTENT_URI,
                 new String[] {"count(*) AS count"},
                 null,
                 null,
@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements SaleAdapter.CallB
         mFragmentList.add(new SaleFragment());
         mFragmentList.add(new LocalSaleFragment());
         mFragmentList.add(new FavouriteFragment());
-        mFragmentTitleList.add("Sale");
-        mFragmentTitleList.add("Local Sale");
+        mFragmentTitleList.add("Global");
+        mFragmentTitleList.add("Local");
         mFragmentTitleList.add("Favourites");
         mMyPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(),mFragmentList,mFragmentTitleList);
         viewPager.setAdapter(mMyPagerAdapter);

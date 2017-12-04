@@ -26,11 +26,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 import anuja.project.finalproject.MainActivity;
 import anuja.project.finalproject.R;
-import anuja.project.finalproject.data.ProductContract;
+import anuja.project.finalproject.data.NewsContract;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -106,33 +104,33 @@ public class DetailActivity extends Fragment implements LoaderManager.LoaderCall
 
         if(data != null && data.moveToFirst()){
             Log.d(TAG, "Inside onLoadFinished...... cursor data"+data);
-            UrlStr = data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_URL));
-            mTitle.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_TITLE)));
-            mSite.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_SITE)));
-            String datestr = data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_LASTCHANGE));
-            String modifiedDate = datestr.substring(0,10);
-            mDate.setText(modifiedDate);
-            mDescription.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_DESCRIPTION)));
-            mPrice.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRICE)));
-            mCurrency.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENCY)));
-            mPrice_offer.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_OFFER)));
-            mOfferCurrency.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENCY)));
-
-            if(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_IMAGE))!= null ){
-                Picasso.with(getActivity()).load(
-                        data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_IMAGE)))
-                        .fit()
-                        .into(mBackdropImage);
-            }else{
-                mBackdropImage.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.sale_default));
-            }
-            mCollapsingToolbarLayout.setTitle(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_TITLE)));
-            favorite_flag = data.getInt(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_FAV))==1;
-            if(favorite_flag)
-            {
-                mFabButton.setImageResource(ic_favorite_black);
-            }
-            mId = data.getInt(data.getColumnIndex(ProductContract.ProductEntry._ID));
+//            UrlStr = data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_URL));
+//            mTitle.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_TITLE)));
+//            mSite.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_SITE)));
+//            String datestr = data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_LASTCHANGE));
+//            String modifiedDate = datestr.substring(0,10);
+//            mDate.setText(modifiedDate);
+//            mDescription.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_DESCRIPTION)));
+//            mPrice.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRICE)));
+//            mCurrency.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENCY)));
+//            mPrice_offer.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_OFFER)));
+//            mOfferCurrency.setText(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENCY)));
+//
+//            if(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_IMAGE))!= null ){
+//                Picasso.with(getActivity()).load(
+//                        data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_IMAGE)))
+//                        .fit()
+//                        .into(mBackdropImage);
+//            }else{
+//                mBackdropImage.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.sale_default));
+//            }
+//            mCollapsingToolbarLayout.setTitle(data.getString(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_TITLE)));
+//            favorite_flag = data.getInt(data.getColumnIndex(ProductContract.ProductEntry.COLUMN_FAV))==1;
+//            if(favorite_flag)
+//            {
+//                mFabButton.setImageResource(ic_favorite_black);
+//            }
+//            mId = data.getInt(data.getColumnIndex(ProductContract.ProductEntry._ID));
 
             getActivity().supportInvalidateOptionsMenu();
         }
@@ -167,19 +165,19 @@ public class DetailActivity extends Fragment implements LoaderManager.LoaderCall
         ContentResolver contentResolver = getActivity().getContentResolver();
         if (favorite_flag) {
             Log.d(TAG, "Remove from favourite....");
-            cv.put(ProductContract.ProductEntry.COLUMN_FAV,0);
+            cv.put(NewsContract.NewsEntry.COLUMN_FAV,0);
             mFabButton.setImageResource(ic_favorite_white);
             Toast.makeText(getActivity(),getString(R.string.RemoveFromfab),Toast.LENGTH_LONG).show();
             favorite_flag=false;
         } else {
             Log.d(TAG, "Mark favourite....");
-            cv.put(ProductContract.ProductEntry.COLUMN_FAV, 1);
+            cv.put(NewsContract.NewsEntry.COLUMN_FAV, 1);
             mFabButton.setImageResource(ic_favorite_black);
             Toast.makeText(getActivity(),getString(R.string.Addedasfab),Toast.LENGTH_LONG).show();
             favorite_flag=true;
         }
 
-        contentResolver.update(ProductContract.ProductEntry.getUriWithId(mId),
+        contentResolver.update(NewsContract.NewsEntry.getUriWithId(mId),
                 cv, null, null);
     }
 
